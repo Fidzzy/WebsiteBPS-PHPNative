@@ -1,0 +1,12 @@
+# Defense-in-depth: kalau suatu saat server salah konfigurasi dan tidak
+# mengeksekusi file .php di folder ini (misalnya malah men-serve-nya
+# sebagai teks biasa), file ini mencegah folder config/ diakses langsung
+# dari browser sama sekali.
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

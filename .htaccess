@@ -1,0 +1,17 @@
+# Blokir akses langsung ke file-file yang tidak seharusnya bisa diunduh
+# publik kalau seluruh folder repo ini di-upload apa adanya ke hosting
+# (termasuk riwayat git, dokumentasi migrasi, dan file environment).
+
+<FilesMatch "\.(sql|md|env|gitignore|patch)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Folder .git (kalau ikut ter-upload) - riwayat commit bisa berisi
+# jejak API key lama, jangan sampai bisa diakses publik.
+RedirectMatch 404 /\.git

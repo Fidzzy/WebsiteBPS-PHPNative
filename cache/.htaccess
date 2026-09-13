@@ -1,0 +1,11 @@
+# Folder ini cuma berisi cache hasil fetch API BPS (dibuat otomatis oleh
+# includes/bps_client.php), tidak pernah diakses langsung lewat browser.
+# Blokir sebagai defense-in-depth, sama seperti config/ dan includes/.
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

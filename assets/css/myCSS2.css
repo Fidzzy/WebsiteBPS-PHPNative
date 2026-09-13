@@ -1,0 +1,1066 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: clip; /* cegah scroll horizontal di HP tanpa memotong dropdown */
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+header {
+  background-color: rgb(0, 43, 106);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; /* Ubah min-height menjadi fixed height agar sejajar */
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 5%; /* Memberikan jarak responsif di kiri-kanan */
+  box-sizing: border-box;
+}
+
+header img {
+  height: 35px;
+  margin-right: 15px; /* Jarak antara logo dan judul */
+}
+
+.judulweb {
+  color: white;
+  font-weight: bold;
+  font-size: 22px;
+  font-style: italic;
+  line-height: 1.2;
+  white-space: nowrap; /* Mencegah teks turun ke bawah */
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* Secara otomatis mendorong nav ke ujung kanan */
+  height: 100%;
+}
+
+nav a {
+  color: white;
+  text-align: center;
+  padding: 0 16px;
+  text-decoration: none;
+  font-size: 17px;
+  line-height: 60px; /* Menyesuaikan dengan tinggi header */
+  height: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.2s;
+}
+
+/* Hover & aktif: garis putih di bawah (underline), tanpa blok background */
+nav a::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+nav a:hover {
+  background-color: transparent;
+  color: white;
+}
+
+nav a:hover::after {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+nav a.active {
+  background-color: transparent;
+  color: white;
+  font-weight: bold;
+}
+
+nav a.active::after {
+  background: white;
+}
+
+/* Dropdown Navigasi Utama */
+.nav-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.nav-dropbtn {
+  color: white;
+  text-align: center;
+  padding: 0 16px;
+  text-decoration: none;
+  font-size: 17px;
+  line-height: 60px;
+  height: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.nav-dropbtn::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+/* Hover & terbuka: garis putih di bawah, tanpa blok background */
+.nav-dropdown:hover .nav-dropbtn, .nav-dropbtn.active {
+  background: none;
+  background-color: transparent;
+  color: white;
+  font-weight: bold;
+}
+
+.nav-dropdown:hover .nav-dropbtn::after, .nav-dropbtn.active::after {
+  background: white;
+}
+
+.nav-dropdown-content {
+  display: none;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1001;
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+
+.nav-dropdown-content a {
+  color: #333;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  line-height: normal;
+  height: auto;
+  text-align: left;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-dropdown-content a:hover {
+  background-color: #034f84;
+  color: white;
+}
+
+/* Penanda item dropdown yang sedang aktif (pengganti inline style lama) */
+.nav-dropdown-content a.current {
+  font-weight: bold;
+  background-color: rgba(3, 79, 132, 0.1);
+  color: #002b6a;
+}
+
+.nav-dropdown:hover .nav-dropdown-content {
+  display: block;
+}
+
+/* Tombol hamburger () disuntik otomatis oleh assets/js/nav.js.
+   Tersembunyi di desktop, muncul di HP/tablet (lihat media query). */
+.nav-toggle {
+  display: none;
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: white;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+/* Animasi jadi "X" saat drawer terbuka */
+.nav-toggle.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Container untuk area profil */
+.profile-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+  height: 100%;
+}
+
+/* Styling Ikon merah */
+.profile-icon {
+  width: 38px;
+  height: 38px;
+  background-color: #717070; 
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Kotak popup informasi user */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 60px; /* Pas terpasang sejajar dengan tinggi header */
+  right: 0;
+  background-color: rgba(0, 43, 106, 0.35); 
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  min-width: 170px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+  z-index: 1001;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Memunculkan kotak saat kursor berada di area dropdown */
+.profile-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Teks nama dan role */
+.user-info {
+  color: #111;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.user-info strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.user-info span {
+  font-size: 16px;
+}
+
+/* Desain tombol logout khusus di dalam dropdown */
+nav .dropdown-content .btn-logout {
+  display: inline-block;
+  background-color: #b32a22;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 2px;
+  line-height: normal; /* Menimpa line-height: 60px dari nav a standar */
+  height: auto;
+  width: 100%;
+}
+
+nav .dropdown-content .btn-logout:hover {
+  background-color: #8f211a;
+}
+
+main {
+  width: min(1180px, 93%);
+  margin: auto;
+  padding-top: 84px;
+  box-sizing: border-box;
+}
+
+footer {
+  margin-top: 60px;
+}
+
+.footer-main {
+  background-color: #002b6a;
+  color: #d0dce8;
+  padding: 36px 12% 24px 12%;
+  box-sizing: border-box;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.footer-logo img {
+  height: 38px;
+}
+
+.footer-logo span {
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  font-style: italic;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.footer-cols {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.footer-col {
+  flex: 1 1 180px;
+  min-width: 150px;
+}
+
+.footer-info {
+  flex: 2 1 260px;
+}
+
+.footer-info p {
+  font-size: 15px;
+  line-height: 1.9;
+  margin: 0 0 12px 0;
+  color: #d0dce8;
+}
+
+.footer-col h4 {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 12px 0;
+  padding-bottom: 6px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col ul li {
+  margin-bottom: 8px;
+}
+
+.footer-col ul li a {
+  color: #d0dce8;
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+
+.footer-col ul li a:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  background-color: #002b6a;
+  color: #d0dce8;
+  text-align: center;
+  padding: 14px 12%;
+  font-size: 15px;
+  box-sizing: border-box;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tigaopsi {
+  display: flex;
+}
+
+.tigaopsi a {
+  display: inline-block;
+  text-decoration: underline;
+  color: #d0dce8;
+  padding: 5px 20px 5px 0;
+  font-size: 15px;
+  margin-top: 8px;
+}
+
+.tigaopsi a:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+#berakhlak {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  height: 75px;
+}
+.data-tabel {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-tabel th,
+.data-tabel td {
+  padding: 0.5em 0.5em;
+  border: 1px solid #ccc;
+}
+.data-tabel th {
+  background-color: #002b6a;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+.data-tabel td {
+  text-align: center;
+}
+.data-tabel tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.data-tabel td a {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.data-tabel td a:hover {
+  color: #034f84;
+  text-decoration: none;
+}
+
+.tabel-publikasi {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tabel di dalam wrapper scroll diberi lebar minimum agar bisa digeser
+   di HP, bukan memampatkan isi sampai tak terbaca. */
+.tabel-publikasi .data-tabel {
+  min-width: 620px;
+}
+
+.publikasi-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+.filter-panel {
+  flex: 0 0 280px;
+  max-width: 280px;
+}
+
+.filter-panel-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+}
+
+.filter-card {
+  background-color: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.filter-card label.filter-label {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+  margin: 16px 0 6px 0;
+}
+
+.filter-card label.filter-label:first-of-type {
+  margin-top: 0;
+}
+
+.filter-card input[type="text"],
+.filter-card select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  color: #333;
+  background-color: #fff;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.filter-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0 0;
+  font-size: 15px;
+  color: #555;
+}
+
+.filter-checkbox-row input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  accent-color: #034f84;
+}
+
+.filter-submit {
+  display: block;
+  width: 100%;
+  margin-top: 22px;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #034f84;
+  color: #fff;
+  font-weight: bold;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.filter-submit:hover {
+  background-color: #023355;
+}
+
+.filter-status {
+  display: block;
+  min-height: 18px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #034f84;
+}
+
+.filter-status.is-error {
+  color: #d9534f;
+}
+
+.publikasi-content.is-loading {
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.publikasi-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hasil-kosong {
+  text-align: center;
+  color: #777;
+  padding: 30px 10px;
+  background-color: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+}
+
+/* Info jumlah hasil publikasi. */
+.hasil-count {
+  font-size: 15px;
+  color: #555;
+  margin: 0 0 12px 0;
+}
+
+.api-warning {
+  font-size: 15px;
+  color: #7a5b00;
+  background-color: #fff8e1;
+  border: 1px solid #e6c200;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+/* Navigasi halaman dipakai page09A (publikasi), berita.php, infografis.php.
+   (Aturan inline lama di berita/infografis tetap menang bila berbeda,
+ karena dimuat setelah file ini jadi tidak merusak tampilan lama.) */
+.pagination {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 30px 0;
+}
+
+.pagination a,
+.pagination span {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  color: #034f84;
+  text-decoration: none;
+  font-size: 16px;
+  margin-left: -1px;
+  background-color: white;
+}
+
+.pagination a:hover {
+  background-color: #f2f2f2;
+}
+
+.pagination .active {
+  background-color: #034f84;
+  color: white;
+  border-color: #034f84;
+  z-index: 1;
+}
+
+.pagination .disabled {
+  color: #999;
+  background-color: #f9f9f9;
+  pointer-events: none;
+}
+
+.pagination .dots {
+  pointer-events: none;
+  color: #034f84;
+}
+
+.pagination a:first-child,
+.pagination span:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .publikasi-layout {
+    flex-direction: column;
+  }
+
+  .filter-panel {
+    max-width: 100%;
+    flex-basis: auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.kotak-form form {
+  width: min(640px, 100%);
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.kotak-form table {
+  width: 100%;
+}
+
+.kotak-form input:not([type="submit"]) {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.kotak-form input[type="submit"] {
+  padding: 12px 20px;
+  border: none;
+  background-color: #034f84;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.kotak-form input[type="submit"]:hover {
+  background-color: #023355;
+}
+
+#pesanError {
+  display: none;
+  width: min(640px, 100%);
+  margin: 0 auto 15px auto;
+  padding: 12px 16px;
+  background-color: #fff3f3;
+  border: 1px solid #e74c3c;
+  border-radius: 4px;
+  color: #c0392b;
+  font-size: 16px;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+#pesanSukses {
+  display: none;
+  width: min(640px, 100%);
+  margin: 0 auto 15px auto;
+  padding: 12px 16px;
+  background-color: #d4edda;
+  border: 1px solid #28a745;
+  border-radius: 4px;
+  color: #155724;
+  font-size: 16px;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.galeri-container {
+  width: min(900px, 100%);
+  margin: 0 auto 40px auto;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.galeri-preview {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.galeri-preview img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  max-height: min(600px, 62vh);
+  background-color: #000;
+  border: 2px solid #034f84;
+  border-radius: 4px;
+  display: block;
+}
+
+.galeri-thumbnail {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.galeri-thumbnail img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  margin: 0;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.galeri-thumbnail img:last-child {
+  margin-right: 0;
+}
+
+.galeri-thumbnail img:hover {
+  opacity: 0.6;
+  border-color: #034f84;
+}
+
+.galeri-thumbnail img.aktif {
+  border-color: #034f84;
+  border-width: 2px;
+}
+
+.galeri-thumbnail::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.galeri-judul {
+  font-size: 15px;
+  color: #555;
+  margin-top: 8px;
+  text-align: center;
+  font-style: italic;
+}
+
+/*
+ RESPONSIF tablet & HP (<= 900px): navbar jadi drawer hamburger
+*/
+@media (max-width: 900px) {
+  header {
+    height: 60px;
+    padding: 0 14px;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  header img {
+    height: 30px;
+    margin: 0 8px 0 0;
+    flex: 0 0 auto;
+  }
+
+  .judulweb {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.3;
+    white-space: normal;
+  }
+
+  .nav-toggle {
+    display: flex;
+    flex: 0 0 auto;
+  }
+
+  /* Drawer geser dari kanan */
+  header nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(300px, 84vw);
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    padding: 72px 0 24px 0;
+    background-color: #002b6a;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow-y: auto;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.35);
+    transform: translateX(105%);
+    transition: transform 0.28s ease;
+    z-index: 1002;
+  }
+
+  header nav.open {
+    transform: translateX(0);
+  }
+
+  header nav a {
+    line-height: 1.4;
+    height: auto;
+    padding: 14px 22px;
+    text-align: left;
+    white-space: normal;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Garis bawah hover desktop dimatikan; ganti penanda kiri */
+  header nav a::after,
+  .nav-dropbtn::after {
+    display: none;
+  }
+
+  header nav a.active {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 3px 0 0 #ffffff;
+  }
+
+  .nav-dropdown {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+  }
+
+  .nav-dropbtn {
+    width: 100%;
+    text-align: left;
+    line-height: 1.4;
+    height: auto;
+    padding: 14px 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Di HP hover tidak ada dropdown hanya terbuka lewat tap (.open) */
+  .nav-dropdown:hover .nav-dropdown-content {
+    display: none;
+  }
+
+  .nav-dropdown.open .nav-dropdown-content {
+    display: block;
+  }
+
+  .nav-dropdown-content {
+    position: static;
+    min-width: 0;
+    background: rgba(0, 0, 0, 0.22);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .nav-dropdown-content a {
+    color: #e6edf5;
+    padding: 12px 22px 12px 34px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .nav-dropdown-content a:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .nav-dropdown-content a.current {
+    font-weight: bold;
+    color: white;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  /* Profil: popup jadi blok statis di dalam drawer */
+  .profile-dropdown {
+    margin: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-icon {
+    display: none;
+  }
+
+  .profile-dropdown .dropdown-content {
+    display: block;
+    position: static;
+    background: rgba(0, 0, 0, 0.22);
+    box-shadow: none;
+    padding: 14px 22px;
+    text-align: left;
+  }
+
+  .profile-dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .user-info {
+    color: #e6edf5;
+  }
+
+  /* Nama user di nav admin (span) */
+  header nav > span {
+    padding: 12px 22px;
+    font-size: 15px;
+  }
+
+  /* Kunci scroll body saat drawer terbuka */
+  body.nav-open {
+    overflow: hidden;
+  }
+
+  main {
+    width: 100%;
+    padding: 76px 16px 0 16px;
+  }
+
+  .publikasi-layout {
+    flex-direction: column;
+  }
+
+  .filter-panel {
+    max-width: 100%;
+    flex-basis: auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .footer-main {
+    padding: 24px 5%;
+  }
+
+  .footer-cols {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .footer-col,
+  .footer-info {
+    flex: 1 1 100%;
+  }
+}
+
+/*
+   HP kecil (<= 600px): penyesuaian akhir
+*/
+@media (max-width: 600px) {
+  .judulweb {
+    font-size: 14px;
+  }
+
+  header img {
+    height: 26px;
+  }
+
+  .footer-bottom {
+    padding: 10px 5%;
+    font-size: 14px;
+  }
+
+  .kotak-form form {
+    padding: 16px 14px;
+  }
+
+  /* Form 2 kolom (label | input) ditumpuk vertikal di HP kecil */
+  .kotak-form table,
+  .kotak-form tbody,
+  .kotak-form tr,
+  .kotak-form td {
+    display: block;
+    width: 100%;
+  }
+
+  .kotak-form td {
+    padding: 4px 0;
+  }
+
+  .data-tabel th,
+  .data-tabel td {
+    font-size: 14px;
+    padding: 0.35em 0.4em;
+  }
+
+  .galeri-thumbnail {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .galeri-thumbnail img {
+    height: 110px;
+  }
+
+  .tigaopsi {
+    flex-wrap: wrap;
+  }
+
+  #berakhlak {
+    height: auto;
+    max-width: 220px;
+  }
+}

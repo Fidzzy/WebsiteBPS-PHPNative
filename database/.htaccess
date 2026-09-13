@@ -1,0 +1,14 @@
+# Blokir akses langsung ke file .sql di folder ini lewat browser.
+# File-file ini berisi struktur & (untuk keperluan development) data
+# contoh database - tidak boleh bisa diunduh publik saat website di-hosting.
+
+# Apache 2.4+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Apache 2.2 (fallback)
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

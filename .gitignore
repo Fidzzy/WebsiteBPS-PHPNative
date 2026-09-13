@@ -1,0 +1,14 @@
+# Rahasia / konfigurasi lokal - jangan commit
+.env
+.env.local
+
+# Cache hasil fetch API BPS (dibuat otomatis, jangan di-commit)
+/cache/*
+!/cache/.gitkeep
+!/cache/.htaccess
+
+# File OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

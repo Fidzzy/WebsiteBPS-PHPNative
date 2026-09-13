@@ -1,0 +1,11 @@
+# Sama seperti config/.htaccess - folder ini cuma berisi helper yang
+# di-include dari script PHP lain, tidak pernah diakses langsung lewat
+# browser. Blokir sebagai defense-in-depth.
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
