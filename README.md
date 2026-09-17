@@ -2,6 +2,7 @@
 
 Dibuat oleh: Muhammad Hafidz Ar Rasyid Hutagalung
 NIM: 222413683 — Kelas: 2KS3
+Repo Github: https://github.com/Fidzzy/WebsiteBPS-PHPNative
 
 Website tiruan BPS Sumut: dashboard publik + daftar publikasi, BRS, katalog data,
 tabel dinamis, exim, berita pers, infografis, dan galeri — dengan data live dari
@@ -14,15 +15,15 @@ Login hanya untuk admin; pengunjung tidak perlu login.
 - MariaDB 10.4 / MySQL + phpMyAdmin (paket XAMPP)
 - Apache (XAMPP), folder `cache/` writable
 
-## 2. Instalasi (Laptop Baru / Repo Baru)
+## 2. Instalasi
 
 ```bat
-:: 1. Clone ke htdocs
-git clone <url-repo-baru> C:\xampp\htdocs\projekpbw_bugfix
+:: 1. Extract ZIP ke htdocs sehingga menjadi:
+::    C:\xampp\htdocs\projekpbw_bugfix\index.php
 
-:: 2. Config lokal (tidak ikut ke-push)
-copy .env.example .env
-:: lalu edit .env, isi BPS_API_KEY dari https://webapi.bps.go.id/developer/
+:: 2. File .env sudah terisi (BPS_API_KEY + config DB) — langsung pakai.
+::    Kalau key bermasalah, edit .env dan isi BPS_API_KEY baru dari
+::    https://webapi.bps.go.id/developer/ (atau copy dari .env.example).
 ```
 
 Isi `.env`:
@@ -50,13 +51,11 @@ DB_CHARSET=utf8mb4
    http://localhost/projekpbw_bugfix/modules/auth/login.php -> login admin
 ```
 
-> `.env` sudah di-`.gitignore` dan tidak akan ke-push. Yang di-commit hanya
-> `.env.example` + kode dengan placeholder. Untuk repo baru: cukup push
-> working tree sekarang — key lama tidak ada di file tracked
-> (`git grep` bersih), jadi history repo baru bersih. Tetap generate
-> **key baru** di dashboard BPS dan jangan pakai key lama lagi.
+> Paket ZIP ini sudah berisi file `.env` yang terisi (BPS_API_KEY + config DB),
+> jadi tinggal extract, import database, dan buka di browser.
+> File `.env.example` disertakan sebagai cadangan template config.
 
-Akun contoh (ganti sebelum go-live):
+Akun demo:
 
 ```
 admin / admin123 (role admin, bisa login)
@@ -77,20 +76,18 @@ modules/galeri/            -> CRUD galeri (page09G/H/I/J)
 api/                       -> REST JSON (auth + publikasi), didok di api/API.md
 assets/                    -> css/myCSS2.css, js/nav.js + validasiForm.js + page11A_suggestion.js,
                               img/ (logo, ikon indikator, sampul, foto galeri), pdf/
-cache/                     -> *.json hasil fetch BPS (otomatis, tidak di-commit)
+cache/                     -> *.json hasil fetch BPS (otomatis, tidak ikut ZIP)
 database/                  -> 5 file .sql (lihat §2) + .htaccess proteksi
-latihan/                   -> php09A-D.php, latihan form terpisah (bukan app utama)
-MIGRASI.md                 -> catatan restruktur + hardening (9 sesi)
 ```
 
 ## 4. Konfigurasi (`config/` + `.env`)
 
-| File | Fungsi |
-|---|---|
-| `config/load_env.php` | Loader `.env` tanpa composer. `loadEnv()` idempotent: parse `KEY=VALUE` (skip `#`/kosong, dukung `export`, strip quotes), tidak menimpa env server, auto-run saat di-require. |
-| `config/bps_api.php` | `BPS_API_KEY` (dari `.env`, fallback placeholder), `BPS_DOMAIN` (default `1200` = Sumut), `BPS_API_BASE` Web API BPS. |
+| File                        | Fungsi                                                                                                                                                                                                      |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config/load_env.php`       | Loader `.env` tanpa composer. `loadEnv()` idempotent: parse `KEY=VALUE` (skip `#`/kosong, dukung `export`, strip quotes), tidak menimpa env server, auto-run saat di-require.                               |
+| `config/bps_api.php`        | `BPS_API_KEY` (dari `.env`, fallback placeholder), `BPS_DOMAIN` (default `1200` = Sumut), `BPS_API_BASE` Web API BPS.                                                                                       |
 | `config/bps_indicators.php` | Daftar kartu dashboard. Cara A: `keyword` (auto-discovery) / Cara B: presisi `var_id, vervar_id, turvar_id, th_id, turtahun_id` + `title, unit, icon, show_trend`. Contoh: inflasi 762, ekspor 60, IPM 750. |
-| `config/dbconn.php` | Baca `DB_HOST/DB_NAME/DB_USER/DB_PASS/DB_CHARSET` dari env (fallback localhost/projekpbw/root/“”). Koneksi PDO (`ERRMODE_EXCEPTION`, `FETCH_ASSOC`, charset `utf8mb4`). Error disamarkan + `error_log`. |
+| `config/dbconn.php`         | Baca `DB_HOST/DB_NAME/DB_USER/DB_PASS/DB_CHARSET` dari env (fallback localhost/projekpbw/root/“”). Koneksi PDO (`ERRMODE_EXCEPTION`, `FETCH_ASSOC`, charset `utf8mb4`). Error disamarkan + `error_log`.     |
 
 ## 5. Auth & Role (`includes/auth.php` + `modules/auth/`)
 
@@ -115,43 +112,43 @@ MIGRASI.md                 -> catatan restruktur + hardening (9 sesi)
 
 Publik (tanpa login):
 
-| File | Isi |
-|---|---|
-| `index.php` | Dashboard: hero + layanan, carousel indikator + grafik tren SVG server-side (`renderBpsTrendSvg()`), tab Informasi Terbaru (6 publikasi/BRS/infografis, cache `home_brs.json` 1 jam, `home_infografis.json` 6 jam) |
-| `publikasi/page09A.php` | Daftar publikasi API+DB: filter `?q=&tahun=&urutan=terbaru/terlama/terpopuler`, paginasi 5/10/20 |
-| `publikasi/berita.php` | BRS (`model=pressrelease`, filter q/bulan/tahun) |
-| `publikasi/katalog.php` | Statistik per subjek (sidebar via `bps_katalog_data.php`) |
-| `publikasi/data_dinamis.php` | Query-builder tabel dinamis (maks 2 tabel) |
-| `publikasi/exim.php` | Ekspor-impor nasional + HS 2-digit, murni API-driven |
-| `publikasi/pers.php` + `pers_detail.php` | Berita (`model=news`) + proxy JSON detail untuk modal (anti-XSS) |
-| `publikasi/infografis.php` | Galeri infografis (`model=infographic`, filter subjek) |
-| `publikasi/track_view.php` | POST increment `dilihat` (counter Terpopuler) |
-| `publikasi/page11A_gethint.php` | Autocomplete JSON 5 judul (`LIKE`) |
-| `galeri/page09G.php` | Galeri kegiatan (`ORDER BY urutan`) |
+| File                                     | Isi                                                                                                                                                                                                                |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `index.php`                              | Dashboard: hero + layanan, carousel indikator + grafik tren SVG server-side (`renderBpsTrendSvg()`), tab Informasi Terbaru (6 publikasi/BRS/infografis, cache `home_brs.json` 1 jam, `home_infografis.json` 6 jam) |
+| `publikasi/page09A.php`                  | Daftar publikasi API+DB: filter `?q=&tahun=&urutan=terbaru/terlama/terpopuler`, paginasi 5/10/20                                                                                                                   |
+| `publikasi/berita.php`                   | BRS (`model=pressrelease`, filter q/bulan/tahun)                                                                                                                                                                   |
+| `publikasi/katalog.php`                  | Statistik per subjek (sidebar via `bps_katalog_data.php`)                                                                                                                                                          |
+| `publikasi/data_dinamis.php`             | Query-builder tabel dinamis (maks 2 tabel)                                                                                                                                                                         |
+| `publikasi/exim.php`                     | Ekspor-impor nasional + HS 2-digit, murni API-driven                                                                                                                                                               |
+| `publikasi/pers.php` + `pers_detail.php` | Berita (`model=news`) + proxy JSON detail untuk modal (anti-XSS)                                                                                                                                                   |
+| `publikasi/infografis.php`               | Galeri infografis (`model=infographic`, filter subjek)                                                                                                                                                             |
+| `publikasi/track_view.php`               | POST increment `dilihat` (counter Terpopuler)                                                                                                                                                                      |
+| `publikasi/page11A_gethint.php`          | Autocomplete JSON 5 judul (`LIKE`)                                                                                                                                                                                 |
+| `galeri/page09G.php`                     | Galeri kegiatan (`ORDER BY urutan`)                                                                                                                                                                                |
 
 Khusus admin (`requireAdmin()` + POST + CSRF):
 
-| File | Isi |
-|---|---|
+| File                                           | Isi                                                |
+| ---------------------------------------------- | -------------------------------------------------- |
 | `publikasi/page09C.php` + `page09C_action.php` | Form + INSERT publikasi (validasi + upload sampul) |
-| `publikasi/page09E.php` + `page09E_action.php` | Form + UPDATE publikasi (ganti sampul) |
-| `publikasi/page09F.php` | DELETE publikasi + hapus file sampul |
-| `galeri/page09H.php` + `page09H_action.php` | Tambah galeri + upload gambar |
-| `galeri/page09I.php` + `page09I_action.php` | Edit galeri + ganti foto |
-| `galeri/page09J.php` | Hapus galeri |
+| `publikasi/page09E.php` + `page09E_action.php` | Form + UPDATE publikasi (ganti sampul)             |
+| `publikasi/page09F.php`                        | DELETE publikasi + hapus file sampul               |
+| `galeri/page09H.php` + `page09H_action.php`    | Tambah galeri + upload gambar                      |
+| `galeri/page09I.php` + `page09I_action.php`    | Edit galeri + ganti foto                           |
+| `galeri/page09J.php`                           | Hapus galeri                                       |
 
 ## 8. REST API (`api/`, didok di `api/API.md`)
 
 Helper `api/helpers/response.php`: `json_response()`, `get_json_or_post_body()`, `apiRequireLogin/Admin/Csrf()` (session cookie + header `X-CSRF-Token`).
 
-| Endpoint | Akses |
-|---|---|
-| `POST api/auth/login.php` | Login admin → `{id,username,nama,role,csrf_token}` |
-| `POST api/auth/logout.php` | Hancurkan session |
-| `GET api/auth/me.php` | Cek session (publik) |
-| `GET api/publikasi/index.php` (`?search&tahun&urutan`) | List publikasi (publik) |
-| `POST api/publikasi/index.php` | Tambah (admin+CSRF) |
-| `GET/PUT/DELETE api/publikasi/detail.php?no=` | Detail (publik) / update / hapus (admin+CSRF) |
+| Endpoint                                               | Akses                                              |
+| ------------------------------------------------------ | -------------------------------------------------- |
+| `POST api/auth/login.php`                              | Login admin → `{id,username,nama,role,csrf_token}` |
+| `POST api/auth/logout.php`                             | Hancurkan session                                  |
+| `GET api/auth/me.php`                                  | Cek session (publik)                               |
+| `GET api/publikasi/index.php` (`?search&tahun&urutan`) | List publikasi (publik)                            |
+| `POST api/publikasi/index.php`                         | Tambah (admin+CSRF)                                |
+| `GET/PUT/DELETE api/publikasi/detail.php?no=`          | Detail (publik) / update / hapus (admin+CSRF)      |
 
 ## 9. Frontend (`assets/`)
 
@@ -164,7 +161,5 @@ Helper `api/helpers/response.php`: `json_response()`, `get_json_or_post_body()`,
 
 ## 10. Cache, Keamanan, Catatan
 
-- `cache/*.json` dibuat otomatis (indikator, publikasi, exim, tabel dinamis, home). Tidak di-commit (`.gitignore` + `.htaccess` deny). Butuh writable.
+- `cache/*.json` dibuat otomatis (indikator, publikasi, exim, tabel dinamis, home). Tidak ikut ZIP (dibuat ulang saat program dijalankan). Folder `cache/` butuh writable.
 - Keamanan: API key + kredensial DB via `.env`; password bcrypt + `session_regenerate_id`; rate-limit login; proteksi CSRF; upload dicek `getimagesize()` + `basename()`; output `htmlspecialchars()`; error DB generik; `.htaccess` blokir `*.sql/*.md/*.env` + `/.git` di root, `Require all denied` di `config/`, `includes/`, `database/`, `cache/`.
-- `MIGRASI.md`: detail 9 sesi restruktur (pindah file tanpa ganti nama, auth, hardening, filter, API JSON, dashboard auto-discovery). Baca jika butuh konteks perubahan.
-- `latihan/php09A-D.php`: praktikum lama, tidak dipakai app utama.
